@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Relatorio-Preliminar</title>
+<title>Relatório-Preliminar</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -22,6 +22,41 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -49,7 +84,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Relatorio-Preliminar</h1>
+<h1 class="title">Relatório-Preliminar</h1>
 </div>
 
 
@@ -66,7 +101,226 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-
+<section id="breve-introdução" class="level3">
+<h3 class="anchored" data-anchor-id="breve-introdução">Breve Introdução</h3>
+<p>A presente APS visa demonstrar e solidificar os conceitos adquiridos durante o curso da disciplina R Para Ciência de Dados, bem como expressar capacidade técnica, a partir do uso concreto e aplicado dos referidos conceitos na análise de um dataset real, não visto em aula. Este relatório, por sua vez, será responsável por apresentar os dados que serão utilizados, introduzir algumas análises preliminares e, por fim, realizar um pré-processamento basal, já estruturando os dados para uso nas demais etapas da APS.</p>
+</section>
+<section id="considerações-iniciais" class="level3">
+<h3 class="anchored" data-anchor-id="considerações-iniciais">Considerações Iniciais</h3>
+<p>O principal objeto de estudo será o dataset FIFA 23 (disponível em: https://huggingface.co/datasets/jsulz/FIFA23), composto por 6 principais tabelas (as tabelas legacy não serão utilizadas). Sendo estas: female_coaches.csv (5.36kB); female_players.csv(94.2MB); female_teams.csv(2.21MB); male_coaches.csv (113kB); male_players.csv(5.64GB); male_teams.csv(113MB), totalizando aproximadamente 5.9GB de dados.</p>
+<p>Devido o tamanho de um dos arquivos e algumas limitações técnicas (memória RAM de apenas 8GB), a biblioteca tidypolars será utilizada para possibilitar a Lazy Evaluation do arquivo male_players. A referida biblioteca traduz, ‘por baixo dos panos’ a ‘grafia’ tidy para comandos polars, viabilizando, assim, a coexistência de uma linguagem altamente idiomática e um ‘potente motor’ polars, que provê ganhos computacionais a partir de paralelismo, multi-threading etc.</p>
+<p>Segue abaixo todo o carregamento do conjunto de dados e os imports necessários. Importante mencionar também que, apesar das tabelas do conjunto female não serem utilizadas na análise principal, elas ainda serão neste primeiro momento, carregadas. Os motivos para sua utilização e posterior remoção estão explicitados na seção seguinte.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readr)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidypolars)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(polars)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(hfhub)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(purrr)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(knitr) </span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tibble)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>cacheFemaleCoaches <span class="ot">&lt;-</span> <span class="fu">hub_download</span>(<span class="at">repo_id =</span> <span class="st">"jsulz/FIFA23"</span>, <span class="at">repo_type =</span> <span class="st">"dataset"</span>, <span class="at">filename =</span> <span class="st">"female_coaches.csv"</span>)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>cacheFemaleTeams <span class="ot">&lt;-</span> <span class="fu">hub_download</span>(<span class="at">repo_id =</span> <span class="st">"jsulz/FIFA23"</span>, <span class="at">repo_type =</span> <span class="st">"dataset"</span>, <span class="at">filename =</span> <span class="st">"female_teams.csv"</span>)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>cacheFemalePlayers <span class="ot">&lt;-</span> <span class="fu">hub_download</span>(<span class="at">repo_id =</span> <span class="st">"jsulz/FIFA23"</span>, <span class="at">repo_type =</span> <span class="st">"dataset"</span>, <span class="at">filename =</span> <span class="st">"female_players.csv"</span>)</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co">#Como a analise principal será feita com o conjunto male, essas tabelas serão carregadas sem a identificação do conjunto ao qual pertencem.  </span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>cacheCoaches <span class="ot">&lt;-</span> <span class="fu">hub_download</span>(<span class="at">repo_id =</span> <span class="st">"jsulz/FIFA23"</span>, <span class="at">repo_type =</span> <span class="st">"dataset"</span>, <span class="at">filename =</span> <span class="st">"male_coaches.csv"</span>)</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>cacheTeams <span class="ot">&lt;-</span> <span class="fu">hub_download</span>(<span class="at">repo_id =</span> <span class="st">"jsulz/FIFA23"</span>, <span class="at">repo_type =</span> <span class="st">"dataset"</span>, <span class="at">filename =</span> <span class="st">"male_teams.csv"</span>)</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>cachePlayers <span class="ot">&lt;-</span> <span class="fu">hub_download</span>(<span class="at">repo_id =</span> <span class="st">"jsulz/FIFA23"</span>, <span class="at">repo_type =</span> <span class="st">"dataset"</span>, <span class="at">filename =</span> <span class="st">"male_players.csv"</span>)</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>femaleCoaches <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(cacheFemaleCoaches)</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>femaleTeams <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(cacheFemaleTeams)</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>femalePlayers <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(cacheFemalePlayers)</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>coaches <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(cacheCoaches)</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>teams <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(cacheTeams)</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>players <span class="ot">&lt;-</span> <span class="fu">scan_csv_polars</span>(cachePlayers) <span class="co">#Carrega o dataset como LazyFrame</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="análise-exploratória-conjunto-female" class="level3">
+<h3 class="anchored" data-anchor-id="análise-exploratória-conjunto-female">Análise Exploratória (Conjunto Female)</h3>
+<p>Nesta etapa o conjunto de dados trabalhados será o female. Seu uso neste momento se dá por alguns motivos, primeiro porque todas as colunas (ou features) disponíveis nas 3 tabelas também estão presentes nos pares correspondentes male, mas principalmente porque os arquivos são substancialmente mais leves, dessa forma é possível contornar (sem necessidade de usar Lazy Evaluation) a limitação técnica previamente mencionada. Ademais, é interessante dar um fim útil para os dados que estão disponíveis ao invés de simplesmente removê-los da análise.</p>
+<p>Cada uma das tabelas contém features diferentes, que serão expostas abaixo. Muito provavelmente a principal analise a ser desenvolvida será com a tabela players, por isso maior enfoque será dado às informações disponíveis nela.</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Features por Tipo de Dado (Female Coaches)</caption>
+<colgroup>
+<col style="width: 12%">
+<col style="width: 13%">
+<col style="width: 74%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Tipo</th>
+<th style="text-align: right;">Quantidade</th>
+<th style="text-align: left;">Colunas</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">character</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">coach_url, short_name, long_name, nationality_name, face_url</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">double</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">coach_id, dob, nationality_id</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Features por Tipo de Dado (Female Teams)</caption>
+<colgroup>
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 97%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Tipo</th>
+<th style="text-align: right;">Quantidade</th>
+<th style="text-align: left;">Colunas</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">double</td>
+<td style="text-align: right;">42</td>
+<td style="text-align: left;">team_id, fifa_version, fifa_update, fifa_update_date, league_id, league_level, nationality_id, overall, attack, midfield, defence, coach_id, rival_team, international_prestige, domestic_prestige, transfer_budget_eur, club_worth_eur, starting_xi_average_age, whole_team_average_age, captain, short_free_kick, long_free_kick, left_short_free_kick, right_short_free_kick, penalties, left_corner, right_corner, def_team_width, def_team_depth, def_defence_pressure, def_defence_aggression, def_defence_width, off_team_width, off_players_in_box, off_corners, off_free_kicks, build_up_play_speed, build_up_play_dribbling, build_up_play_passing, chance_creation_passing, chance_creation_crossing, chance_creation_shooting</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">character</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: left;">team_url, team_name, league_name, nationality_name, home_stadium, def_style, def_defence_defender_line, off_style, off_build_up_play, off_chance_creation, build_up_play_positioning, chance_creation_positioning</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Features por Tipo de Dado (Female Players)</caption>
+<colgroup>
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 98%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Tipo</th>
+<th style="text-align: right;">Quantidade</th>
+<th style="text-align: left;">Colunas</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">double</td>
+<td style="text-align: right;">66</td>
+<td style="text-align: left;">player_id, fifa_version, fifa_update, fifa_update_date, overall, potential, value_eur, wage_eur, age, dob, height_cm, weight_kg, league_id, league_level, club_team_id, club_jersey_number, club_joined_date, club_contract_valid_until_year, nationality_id, nation_team_id, nation_jersey_number, weak_foot, skill_moves, international_reputation, release_clause_eur, pace, shooting, passing, dribbling, defending, physic, attacking_crossing, attacking_finishing, attacking_heading_accuracy, attacking_short_passing, attacking_volleys, skill_dribbling, skill_curve, skill_fk_accuracy, skill_long_passing, skill_ball_control, movement_acceleration, movement_sprint_speed, movement_agility, movement_reactions, movement_balance, power_shot_power, power_jumping, power_stamina, power_strength, power_long_shots, mentality_aggression, mentality_interceptions, mentality_positioning, mentality_vision, mentality_penalties, mentality_composure, defending_marking_awareness, defending_standing_tackle, defending_sliding_tackle, goalkeeping_diving, goalkeeping_handling, goalkeeping_kicking, goalkeeping_positioning, goalkeeping_reflexes, goalkeeping_speed</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">character</td>
+<td style="text-align: right;">44</td>
+<td style="text-align: left;">player_url, short_name, long_name, player_positions, league_name, club_name, club_position, club_loaned_from, nationality_name, nation_position, preferred_foot, work_rate, body_type, real_face, player_tags, player_traits, ls, st, rs, lw, lf, cf, rf, rw, lam, cam, ram, lm, lcm, cm, rcm, rm, lwb, ldm, cdm, rdm, rwb, lb, lcb, cb, rcb, rb, gk, player_face_url</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Segue também abaixo uma tabela que melhor define cada uma das features, aquelas não aparecerem nela são auto-explicativas. Entretanto cabe neste momento já descrever algumas delas em maiores detalhes e estabelecer algumas convenções que serão utilizadas ao longo da análise.</p>
+<ul>
+<li><p>A feature overall será referenciada como Over (ou OVR), muito por convenção da própria comunidade, mas também por ser uma forma mais sucinta de se referir a ela e que eu já estou mais acostumado a usar.</p></li>
+<li><p>As features pace, shooting, passing, dribbling, defending e physic representam os 6 principais atributos de um jogador no jogo e estão expostos em sua carta, assim serão referenciados como FaceStats (ou STATS), pelos mesmos motivos acima expostos.</p></li>
+<li><p>As features attacking_crossing, attacking_finishing, attacking_heading_accuracy, attacking_short_passing, attacking_volleys, skill_dribbling, skill_curve, skill_fk_accuracy, skill_long_passing, skill_ball_control, movement_acceleration, movement_sprint_speed, movement_agility, movement_reactions, movement_balance, power_shot_power, power_jumping, power_stamina, power_strength, power_long_shots, mentality_aggression, mentality_interceptions, mentality_positioning, mentality_vision, mentality_penalties, mentality_composure, defending_marking_awareness, defending_standing_tackle, defending_sliding_tackle são os atributos, expostos de maneira mais específica, que compõem os FaceStats mencionados, assim serão referenciados como In-Game-Stats (ou IGS), mais uma vez pelos mesmos motivos já expostos. É importante também ressaltar que as features que se iniciam com goalkeeping_ representam os IGS dos goleiros.</p></li>
+<li><p>Por fim, as features ls, st, rs, cf, lf, rf, lw, rw, lam, cam, ram, lm, cm, rm, ldm, cdm, rdm, lwb, rwb, lb, cb, rb, gk indicam o OVR de um jogador em cada uma das posições no campo, assim serão referenciados como Rating-Per-Position (ou RPP), novamente por convenção da própria comunidade.</p></li>
+</ul>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Detalhamento das Features</caption>
+<colgroup>
+<col style="width: 38%">
+<col style="width: 60%">
+<col style="width: 0%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Coluna(s)</th>
+<th style="text-align: left;">Descrição</th>
+<th style="text-align: left;">Sigla</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">overall</td>
+<td style="text-align: left;">Apesar parecer uma métrica simples, o nome pode ser um pouco contraintuitivo, como será demonstrado adiante, o overall não é simplesmente uma média dos FaceStats dos jogadores, no final das contas ele acaba sendo mais um valor arbitrário (dentro do intervalo de 0 a 99) definido pela EA para avaliar o Jogador dentro de sua posição</td>
+<td style="text-align: left;">OVR</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">potential</td>
+<td style="text-align: left;">Valor de quanto o jogador pode se desenvolver no futuro, muito usado no modo carreira para jogadores de base. De maneira geral, tende a ser maior para jogadores mais jovens e promissores. Vale ressaltar que jogador que já tem um OVR muito alto tendem a ter um potencial idêntico ao ser over original</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">league_level</td>
+<td style="text-align: left;">Nota atribuída pela EA para indicar a qualidade da liga. As principais ligas europeias tendem a ter os melhores níveis</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">international_reputation</td>
+<td style="text-align: left;">Valor atribuído arbitrariamente pela EA para indicar a reputação internacional do jogador, na teoria é levado em consideração para o cálculo do OVR</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">preferred_foot / weak_foot / skill_moves</td>
+<td style="text-align: left;">A primeira indica o pé dominante do jogador. A segunda atribui um valor de 1 a 5 (em estrelas) para o pé fraco, na pratica um valor 5 indica que o jogador é ambidestro, tornado a primeira feature inútil. A ultima representa a habilidade de finta do jogador, também numa escala de 1 a 5 (estrelas). Uma observação interessante é que dentro do jogo essas métricas agem mais como uma porcentagem de acerto (não distribuída igualmente entre cada estrela), jogadores com 3 para baixo de WF tendem a errar com bastante frequência chutes realizados com o pé fraco, enquanto para jogadores com 4 estrelas essa diferença torna-se bem imperceptível. No caso da habilidade de finta quanto maior o número de estrelas maior é a chance de um jogador acertar uma finta difícil, assim jogadores com poucas estrelas podem conseguir concluir dribles difíceis como a carretilha (que somente se torna consistente a partir de 4 estrelas), ainda que jogadores com 5 estrelas podem acabar errando</td>
+<td style="text-align: left;">NA / WF / SM</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">work_rate</td>
+<td style="text-align: left;">Indica o nível de esforço de um jogador nas duas fases do jogo (defensiva e ofensiva), em três diferentes níveis low, medium e high. Na prática é uma coluna messy, porque contem as duas informações separadas por uma barra. Assim posteriormente será transformada em duas colunas com variáveis dummy</td>
+<td style="text-align: left;">WR</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">player_traits / player_tags</td>
+<td style="text-align: left;">De forma geral são colunas inúteis, tanto em termos de informação quanto de utilidade prática dentro do jogo. Seu funcionamento é extremamente inconsistente, um jogador que não tem uma determinada trait pode performar um determinado tipo de técnica melhor que um jogador que a possuí, sendo que somente algumas delas são facilmente observáveis, seja dentro do jogo ou na vida real. Além disso ambas são extremamente messy, logo serão simplesmente removidas.</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">work_rate</td>
+<td style="text-align: left;">Indica o nível de esforço de um jogador nas duas fases do jogo (defensiva e ofensiva), em três diferentes níveis low, medium e high. Na prática é uma coluna messy, porque contem as duas informações separadas por uma barra. Assim posteriormente será transformada em duas colunas com variáveis dummy</td>
+<td style="text-align: left;">WR</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">pace/shooting/passing/dribbling/defending/physic</td>
+<td style="text-align: left;">Conforme já descrito, essas features compõe os FaceStats de um jogador</td>
+<td style="text-align: left;">STATS</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">attacking_crossing / attacking_finishing / attacking_heading_accuracy / attacking_short_passing / attacking_volleys / skill_dribbling / skill_curve / skill_fk_accuracy / skill_long_passing / skill_ball_control / movement_acceleration / movement_sprint_speed / movement_agility / movement_reactions / movement_balance / power_shot_power / power_jumping / power_stamina / power_strength / power_long_shots / mentality_aggression / mentality_interceptions / mentality_positioning / mentality_vision / mentality_penalties / mentality_composure / defending_marking_awareness / defending_standing_tackle / defending_sliding_tackle</td>
+<td style="text-align: left;">Conforme já descrito, essas features compõe os In-Game-Stats de um jogador. É importante mencionar que elas não estão devidamente classificadas, assim será necessário renomeá-las no pré-processamento para garantir que os atributos estejam corretamente associados ao FaceStat que eles descrevem</td>
+<td style="text-align: left;">IGS</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ls / st / rs / cf / lf / rf / lw / rw / lam / cam / ram / lm / cm / rm / ldm / cdm / rdm / lwb / rwb / lb / cb / rb / gk</td>
+<td style="text-align: left;">Conforme já descrito, essas features indicam quanto o jogador performa em cada posição</td>
+<td style="text-align: left;">RPP</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
 
 </main>
 <!-- /main column -->
