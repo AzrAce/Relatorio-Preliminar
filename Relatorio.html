@@ -128,15 +128,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co">#Como a analise principal será feita com o conjunto male, essas tabelas serão carregadas sem a identificação do conjunto ao qual pertencem.  </span></span>
 <span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>cacheCoaches <span class="ot">&lt;-</span> <span class="fu">hub_download</span>(<span class="at">repo_id =</span> <span class="st">"jsulz/FIFA23"</span>, <span class="at">repo_type =</span> <span class="st">"dataset"</span>, <span class="at">filename =</span> <span class="st">"male_coaches.csv"</span>)</span>
 <span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>cacheTeams <span class="ot">&lt;-</span> <span class="fu">hub_download</span>(<span class="at">repo_id =</span> <span class="st">"jsulz/FIFA23"</span>, <span class="at">repo_type =</span> <span class="st">"dataset"</span>, <span class="at">filename =</span> <span class="st">"male_teams.csv"</span>)</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>cachePlayers <span class="ot">&lt;-</span> <span class="fu">hub_download</span>(<span class="at">repo_id =</span> <span class="st">"jsulz/FIFA23"</span>, <span class="at">repo_type =</span> <span class="st">"dataset"</span>, <span class="at">filename =</span> <span class="st">"male_players.csv"</span>)</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>cachePlayers <span class="ot">&lt;-</span> <span class="fu">hub_download</span>(<span class="at">repo_id =</span> <span class="st">"jsulz/FIFA23"</span>, <span class="at">repo_type =</span> <span class="st">"dataset"</span>, <span class="at">filename =</span> <span class="st">"male_players.csv"</span>, <span class="at">infer_schema_length =</span> <span class="dv">0</span>)</span>
 <span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>femaleCoaches <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(cacheFemaleCoaches)</span>
 <span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>femaleTeams <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(cacheFemaleTeams)</span>
 <span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>femalePlayers <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(cacheFemalePlayers)</span>
 <span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>coaches <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(cacheCoaches)</span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>teams <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(cacheTeams)</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>coaches <span class="ot">&lt;-</span> <span class="fu">scan_csv_polars</span>(cacheCoaches)</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>teams <span class="ot">&lt;-</span> <span class="fu">scan_csv_polars</span>(cacheTeams)</span>
 <span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>players <span class="ot">&lt;-</span> <span class="fu">scan_csv_polars</span>(cachePlayers) <span class="co">#Carrega o dataset como LazyFrame</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
@@ -297,51 +297,46 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td style="text-align: left;">NA</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">work_rate</td>
-<td style="text-align: left;">Indica o nível de esforço de um jogador nas duas fases do jogo (defensiva e ofensiva), em três diferentes níveis low, medium e high. Na prática é uma coluna messy, porque contem as duas informações separadas por uma barra. Assim posteriormente será transformada em duas colunas com variáveis dummy</td>
-<td style="text-align: left;">WR</td>
-</tr>
-<tr class="odd">
 <td style="text-align: left;">pace/shooting/passing/dribbling/defending/physic</td>
 <td style="text-align: left;">Conforme já descrito, essas features compõe os FaceStats de um jogador</td>
 <td style="text-align: left;">STATS</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">attacking_crossing / attacking_finishing / attacking_heading_accuracy / attacking_short_passing / attacking_volleys / skill_dribbling / skill_curve / skill_fk_accuracy / skill_long_passing / skill_ball_control / movement_acceleration / movement_sprint_speed / movement_agility / movement_reactions / movement_balance / power_shot_power / power_jumping / power_stamina / power_strength / power_long_shots / mentality_aggression / mentality_interceptions / mentality_positioning / mentality_vision / mentality_penalties / mentality_composure / defending_marking_awareness / defending_standing_tackle / defending_sliding_tackle</td>
 <td style="text-align: left;">Conforme já descrito, essas features compõe os In-Game-Stats de um jogador</td>
 <td style="text-align: left;">IGS</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">goalkeeping_diving / goalkeeping_handling / goalkeeping_kicking / goalkeeping_positioning / goalkeeping_reflexes / goalkeeping_speed</td>
 <td style="text-align: left;">Essencialmente os IGS dos goleiros. Uma observação interessante é que na pratica não existe uma diferença entre os FaceStats e os IGS deste tipo de jogador. Ainda assim, eles serão considerados IGS por uma característica dos dados posteriormente explicada</td>
 <td style="text-align: left;">GK-IGS</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">player_positions</td>
 <td style="text-align: left;">Indica as posições em que o jogador normalmente joga, o primeiro valor é a posição principal enquanto os demais indicam as demais posições em que jogador joga. Também é uma coluna messy, assim penso em manter somente o valor da primeira posição</td>
 <td style="text-align: left;">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">ls / st / rs / cf / lf / rf / lw / rw / lam / cam / ram / lm / cm / rm / ldm / cdm / rdm / lwb / rwb / lb / cb / rb / lcm / rcm / lcb / rcb / gk</td>
 <td style="text-align: left;">Conforme já descrito, essas features indicam quanto o jogador performa em cada posição</td>
 <td style="text-align: left;">RPP</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">body_type</td>
 <td style="text-align: left;">Por via de regra eles são definidos pela altura e peso dos jogadores, sendo que os caps que definem cada tipo é balanceado pelo gênero do jogador/jogadora. Importante mencionar que alguns jogadores, como salah, messi etc, possuem um body_type definido como Unique</td>
 <td style="text-align: left;">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">real_face</td>
 <td style="text-align: left;">Coluna categórica que apenas indica se o a renderização do rosto do jogador é modelada a partir do jogador real, ou se é usada uma representação genérica. Pode facilmente ser removida</td>
 <td style="text-align: left;">NA</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">player_url / player_face_url</td>
 <td style="text-align: left;">Indicam respectivamente a URL de onde os dados foram extraídos e a URL da imagem de rosto utilizada no jogo. Ambas podem ser facilmente removidas</td>
 <td style="text-align: left;">NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">player_id / fifa_version / fifa_update / fifa_update_date / short_name / long_name / value_eur / wage_eur / age / dob / height_cm / weight_kg / league_id / league_name / club_team_id / club_name / club_position / club_jersey_number / club_loaned_from / club_joined_date / club_contract_valid_until_year / nationality_id / nationality_name / nation_team_id / nation_position / nation_jersey_number / release_clause_eur</td>
 <td style="text-align: left;">Auto-explicativas</td>
 <td style="text-align: left;">NA</td>
@@ -923,124 +918,124 @@ $ goalkeeping_speed              &lt;dbl&gt; NA, NA, NA, NA, NA, NA</code></pre>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">A. Chapman</td>
-<td style="text-align: left;">LB</td>
-<td style="text-align: right;">60.83333</td>
-<td style="text-align: right;">74</td>
+<td style="text-align: left;">A. Krieger</td>
+<td style="text-align: left;">RB, RM, CDM</td>
+<td style="text-align: right;">74.33333</td>
+<td style="text-align: right;">83</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">F. Di Criscio</td>
-<td style="text-align: left;">RB, CB</td>
-<td style="text-align: right;">63.33333</td>
+<td style="text-align: left;">É. Bussaglia</td>
+<td style="text-align: left;">CDM, CM</td>
+<td style="text-align: right;">71.16667</td>
+<td style="text-align: right;">80</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">G. Geyoro</td>
+<td style="text-align: left;">CM, CB</td>
+<td style="text-align: right;">60.16667</td>
+<td style="text-align: right;">66</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">L. Magull</td>
+<td style="text-align: left;">CM, CAM</td>
+<td style="text-align: right;">75.83333</td>
+<td style="text-align: right;">83</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">J. Beattie</td>
+<td style="text-align: left;">CB</td>
+<td style="text-align: right;">68.50000</td>
+<td style="text-align: right;">79</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">S. Kees</td>
+<td style="text-align: left;">CB</td>
+<td style="text-align: right;">57.66667</td>
 <td style="text-align: right;">72</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">E. Berglund</td>
-<td style="text-align: left;">CB, RB</td>
-<td style="text-align: right;">58.16667</td>
-<td style="text-align: right;">75</td>
+<td style="text-align: left;">Emanuelly Barni</td>
+<td style="text-align: left;">LM</td>
+<td style="text-align: right;">69.83333</td>
+<td style="text-align: right;">83</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">L. Tucceri Cimini</td>
-<td style="text-align: left;">LB, CB</td>
-<td style="text-align: right;">56.50000</td>
-<td style="text-align: right;">65</td>
+<td style="text-align: left;">D. Matheson</td>
+<td style="text-align: left;">CM</td>
+<td style="text-align: right;">68.50000</td>
+<td style="text-align: right;">83</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">D. van Lunteren</td>
-<td style="text-align: left;">RB</td>
-<td style="text-align: right;">70.83333</td>
-<td style="text-align: right;">75</td>
+<td style="text-align: left;">N. Fischer</td>
+<td style="text-align: left;">CB</td>
+<td style="text-align: right;">62.66667</td>
+<td style="text-align: right;">87</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">Xu Yanlu</td>
-<td style="text-align: left;">LM, RM</td>
-<td style="text-align: right;">64.00000</td>
-<td style="text-align: right;">72</td>
+<td style="text-align: left;">M. Leupolz</td>
+<td style="text-align: left;">CM, CDM</td>
+<td style="text-align: right;">78.50000</td>
+<td style="text-align: right;">82</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">Camila</td>
-<td style="text-align: left;">CAM, LM, RB</td>
-<td style="text-align: right;">68.66667</td>
+<td style="text-align: left;">A. Phillips</td>
+<td style="text-align: left;">ST</td>
+<td style="text-align: right;">55.16667</td>
 <td style="text-align: right;">70</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">F. Di Criscio</td>
-<td style="text-align: left;">RB, CB</td>
-<td style="text-align: right;">63.33333</td>
-<td style="text-align: right;">72</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">A. Rodriguez</td>
-<td style="text-align: left;">ST, RW, LW, CAM</td>
-<td style="text-align: right;">63.83333</td>
-<td style="text-align: right;">77</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">B. Bonansea</td>
-<td style="text-align: left;">ST, CF</td>
-<td style="text-align: right;">60.16667</td>
+<td style="text-align: left;">B. Mead</td>
+<td style="text-align: left;">ST</td>
+<td style="text-align: right;">62.16667</td>
 <td style="text-align: right;">73</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">Liu Shanshan</td>
-<td style="text-align: left;">LB</td>
-<td style="text-align: right;">69.00000</td>
-<td style="text-align: right;">80</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">A. Ilestedt</td>
-<td style="text-align: left;">CB</td>
-<td style="text-align: right;">64.66667</td>
-<td style="text-align: right;">79</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">H. Raso</td>
-<td style="text-align: left;">RM, RW</td>
-<td style="text-align: right;">68.83333</td>
+<td style="text-align: left;">Amanda Sampedro</td>
+<td style="text-align: left;">CM, RM, CAM</td>
+<td style="text-align: right;">75.16667</td>
 <td style="text-align: right;">79</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">J. Vangheluwe</td>
-<td style="text-align: left;">RB</td>
-<td style="text-align: right;">54.16667</td>
-<td style="text-align: right;">68</td>
+<td style="text-align: left;">C. Foord</td>
+<td style="text-align: left;">RW, LW, ST</td>
+<td style="text-align: right;">76.00000</td>
+<td style="text-align: right;">82</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">K. Buchanan</td>
-<td style="text-align: left;">CB</td>
-<td style="text-align: right;">60.00000</td>
+<td style="text-align: left;">B. Mead</td>
+<td style="text-align: left;">LM, RM</td>
+<td style="text-align: right;">67.00000</td>
 <td style="text-align: right;">78</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">K. Leine</td>
-<td style="text-align: left;">LB, CB</td>
-<td style="text-align: right;">58.00000</td>
-<td style="text-align: right;">72</td>
+<td style="text-align: left;">Karole Pombal</td>
+<td style="text-align: left;">CAM, RM</td>
+<td style="text-align: right;">62.66667</td>
+<td style="text-align: right;">81</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">R. Slegers</td>
-<td style="text-align: left;">CAM</td>
-<td style="text-align: right;">63.33333</td>
+<td style="text-align: left;">H. Glas</td>
+<td style="text-align: left;">RB, RWB, CB</td>
+<td style="text-align: right;">71.50000</td>
+<td style="text-align: right;">83</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Wang Shuang</td>
+<td style="text-align: left;">CAM, RM, CM</td>
+<td style="text-align: right;">62.00000</td>
+<td style="text-align: right;">70</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Rafaelle</td>
+<td style="text-align: left;">CB, RB</td>
+<td style="text-align: right;">64.33333</td>
+<td style="text-align: right;">74</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Marta Corredera</td>
+<td style="text-align: left;">RM, RB</td>
+<td style="text-align: right;">67.66667</td>
 <td style="text-align: right;">76</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">O. Chance</td>
-<td style="text-align: left;">RM, LM</td>
-<td style="text-align: right;">65.00000</td>
-<td style="text-align: right;">73</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">E. Sonnett</td>
-<td style="text-align: left;">CB, CDM</td>
-<td style="text-align: right;">68.66667</td>
-<td style="text-align: right;">72</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">C. Polkinghorne</td>
-<td style="text-align: left;">CB</td>
-<td style="text-align: right;">58.83333</td>
-<td style="text-align: right;">77</td>
 </tr>
 </tbody>
 </table>
@@ -1067,7 +1062,104 @@ $ goalkeeping_speed              &lt;dbl&gt; NA, NA, NA, NA, NA, NA</code></pre>
 </div>
 </div>
 <p>Como demonstrado acima, o OVR claramente não se resume a uma média dos FaceStats. Não existe, pelo menos não de forma pública, uma fórmula certa e exata para o calcúlo de Overall, o que se sabe é que seu número final leva em consideração os STATS, bem como a reputação internacional do jogador. Outrossim, ele é calculado de forma diferente para cada posição, o que é justificável sob um ponto de vista de balanceamento, afinal um jogador da linha defensiva, por exemplo, tende a ter atributos de Pace, Shooting, Passing e Dribbling muito inferiores aos de um atacante, que tende a estar em desvantagem somente no atributo de Defending (apesar de que alguns caosos, como no do messi, é possível que também haja uma forte desvantagem no atributo de Physic). Caso o Overall fosse um reflexo direto somente dos atributos de um jogador, todos os “defenders” teriam Overalls muito inferiores aos dos outros jogadores (os próprios meio campistas tendem a ter stats mais equilibrados), assim é compreensível que o atributo não seja uma conta exata. Por isso mesmo, que se afirmou que no final do dia eles servem muito mais como uma avaliação subjetiva da EA para a qualidade do jogador em sua posição do que como uma métrica objetiva.</p>
-<p>Findada esta etapa, reitera-se que os dados do conjunto female não serão mais utilizados. Conforme já exposto, tanto a partir das analises dos dados quanto por questões, pela falta de um termo melhor, históricas (os times femininos e suas respectivas jogadoras foram sendo adicionadas gradualmente a cada edição do jogo), o conjunto de dados female possuí uma quantidade considerável de NAs, muitas vezes ocasionando em elencos estarem incompletos, ligas não terem tido todos os seus times licenciados ou até em informações financeiras estarem ausentes em edições inteiras. Dessa forma, não se justifica utilizar estes dados para encontrar correlações, realizar análises mais profundas ou até mesmo acompanhar o desenvolvimento de jogadoras ao longo do tempo. Um possível uso desses dados seria para comparar os salários das jogadoras e jogadores das ligas licenciadas, entretanto essa discrepância de valores já é amplamente divulgada, inclusive a partir de dados mais precisos do que aqueles providos pelo Fifa.</p>
+<p>Findada esta etapa, reitera-se que os dados do conjunto female não serão mais utilizados. Conforme já exposto, tanto a partir das analises dos dados quanto por questões, pela falta de um termo melhor, históricas (os times femininos e suas respectivas jogadoras foram sendo adicionadas gradualmente a cada edição do jogo), o conjunto de dados female possuí uma quantidade considerável de NAs, muitas vezes ocasionando em elencos estarem incompletos, ligas não terem tido todos os seus times licenciados ou até em informações financeiras estarem ausentes em edições inteiras. Dessa forma, não se justifica utilizar estes dados para encontrar correlações, realizar análises mais profundas ou até mesmo acompanhar o desenvolvimento de jogadoras e seu salário ao longo do tempo. Um possível uso desses dados seria para comparar os salários das jogadoras e jogadores das ligas licenciadas, entretanto essa discrepância de valores já é amplamente conhecida e divulgada, inclusive a partir de dados mais precisos do que aqueles providos pelo Fifa/EA.</p>
+</section>
+<section id="breve-tratamento-dos-dados-e-considerações-finais" class="level3">
+<h3 class="anchored" data-anchor-id="breve-tratamento-dos-dados-e-considerações-finais">Breve tratamento dos dados e considerações finais</h3>
+<p>Nesta seção serão realizados alguns tratamentos básicos nos dados, de acordo com as ideias expostas na seção anterior, como a criação de uma nova tabela somente com os goleiros, a remoção de colunas com pouco ou nenhum valor informativo (ou preditivo), bem como a estruturação em formato tidy de alguns dados. Serão também apresentadas ideias para possíveis análises e a utilização de uma nova biblioteca para complementar os dados disponíveis. Segue então o referido tratamento:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># As transformações foram feitas de modo repetitivo e sem serem muito eficientes em termos de código utilizado, exatamente para permitir maior clareza visual sobre quais tabelas serão usadas nas próximas etapas e quais dados elas contêm.</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>player17 <span class="ot">&lt;-</span> players <span class="sc">|&gt;</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(fifa_version <span class="sc">==</span> <span class="dv">17</span>, player_positions <span class="sc">!=</span> <span class="st">"GK"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>player_url, <span class="sc">-</span>player_face_url, <span class="sc">-</span>real_face, <span class="sc">-</span>player_traits, <span class="sc">-</span>player_tags) <span class="sc">|&gt;</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">separate</span>(work_rate, <span class="at">into =</span> <span class="fu">c</span>(<span class="st">"work_rate_attacking"</span>, <span class="st">"work_rate_defending"</span>), <span class="at">sep =</span> <span class="st">"/"</span>) </span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>   </span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>players17_GK <span class="ot">&lt;-</span> players <span class="sc">|&gt;</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(fifa_version <span class="sc">==</span> <span class="dv">17</span>, player_positions <span class="sc">==</span> <span class="st">"GK"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>player_url, <span class="sc">-</span>player_face_url, <span class="sc">-</span>real_face, <span class="sc">-</span>player_traits, <span class="sc">-</span>player_tags) <span class="sc">|&gt;</span></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">separate</span>(work_rate, <span class="at">into =</span> <span class="fu">c</span>(<span class="st">"work_rate_attacking"</span>, <span class="st">"work_rate_defending"</span>), <span class="at">sep =</span> <span class="st">"/"</span>) </span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>players18 <span class="ot">&lt;-</span> players <span class="sc">|&gt;</span></span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(fifa_version <span class="sc">==</span> <span class="dv">18</span>, player_positions <span class="sc">!=</span> <span class="st">"GK"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>player_url, <span class="sc">-</span>player_face_url, <span class="sc">-</span>real_face, <span class="sc">-</span>player_traits, <span class="sc">-</span>player_tags) <span class="sc">|&gt;</span></span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">separate</span>(work_rate, <span class="at">into =</span> <span class="fu">c</span>(<span class="st">"work_rate_attacking"</span>, <span class="st">"work_rate_defending"</span>), <span class="at">sep =</span> <span class="st">"/"</span>) </span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>players18_GK <span class="ot">&lt;-</span> players <span class="sc">|&gt;</span></span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(fifa_version <span class="sc">==</span> <span class="dv">18</span>, player_positions <span class="sc">==</span> <span class="st">"GK"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>player_url, <span class="sc">-</span>player_face_url, <span class="sc">-</span>real_face, <span class="sc">-</span>player_traits, <span class="sc">-</span>player_tags) <span class="sc">|&gt;</span></span>
+<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">separate</span>(work_rate, <span class="at">into =</span> <span class="fu">c</span>(<span class="st">"work_rate_attacking"</span>, <span class="st">"work_rate_defending"</span>), <span class="at">sep =</span> <span class="st">"/"</span>) </span>
+<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a>players19 <span class="ot">&lt;-</span> players <span class="sc">|&gt;</span></span>
+<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(fifa_version <span class="sc">==</span> <span class="dv">19</span>, player_positions <span class="sc">!=</span> <span class="st">"GK"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>player_url, <span class="sc">-</span>player_face_url, <span class="sc">-</span>real_face, <span class="sc">-</span>player_traits, <span class="sc">-</span>player_tags) <span class="sc">|&gt;</span></span>
+<span id="cb13-30"><a href="#cb13-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">separate</span>(work_rate, <span class="at">into =</span> <span class="fu">c</span>(<span class="st">"work_rate_attacking"</span>, <span class="st">"work_rate_defending"</span>), <span class="at">sep =</span> <span class="st">"/"</span>) </span>
+<span id="cb13-31"><a href="#cb13-31" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb13-32"><a href="#cb13-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-33"><a href="#cb13-33" aria-hidden="true" tabindex="-1"></a>players19_GK <span class="ot">&lt;-</span> players <span class="sc">|&gt;</span></span>
+<span id="cb13-34"><a href="#cb13-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(fifa_version <span class="sc">==</span> <span class="dv">19</span>, player_positions <span class="sc">==</span> <span class="st">"GK"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb13-35"><a href="#cb13-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>player_url, <span class="sc">-</span>player_face_url, <span class="sc">-</span>real_face, <span class="sc">-</span>player_traits, <span class="sc">-</span>player_tags) <span class="sc">|&gt;</span></span>
+<span id="cb13-36"><a href="#cb13-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">separate</span>(work_rate, <span class="at">into =</span> <span class="fu">c</span>(<span class="st">"work_rate_attacking"</span>, <span class="st">"work_rate_defending"</span>), <span class="at">sep =</span> <span class="st">"/"</span>) </span>
+<span id="cb13-37"><a href="#cb13-37" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb13-38"><a href="#cb13-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-39"><a href="#cb13-39" aria-hidden="true" tabindex="-1"></a>players20 <span class="ot">&lt;-</span> players <span class="sc">|&gt;</span></span>
+<span id="cb13-40"><a href="#cb13-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(fifa_version <span class="sc">==</span> <span class="dv">20</span>, player_positions <span class="sc">!=</span> <span class="st">"GK"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb13-41"><a href="#cb13-41" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>player_url, <span class="sc">-</span>player_face_url, <span class="sc">-</span>real_face, <span class="sc">-</span>player_traits, <span class="sc">-</span>player_tags) <span class="sc">|&gt;</span></span>
+<span id="cb13-42"><a href="#cb13-42" aria-hidden="true" tabindex="-1"></a>  <span class="fu">separate</span>(work_rate, <span class="at">into =</span> <span class="fu">c</span>(<span class="st">"work_rate_attacking"</span>, <span class="st">"work_rate_defending"</span>), <span class="at">sep =</span> <span class="st">"/"</span>) </span>
+<span id="cb13-43"><a href="#cb13-43" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb13-44"><a href="#cb13-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-45"><a href="#cb13-45" aria-hidden="true" tabindex="-1"></a>players20_GK <span class="ot">&lt;-</span> players <span class="sc">|&gt;</span> </span>
+<span id="cb13-46"><a href="#cb13-46" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(fifa_version <span class="sc">==</span> <span class="dv">20</span>, player_positions <span class="sc">==</span> <span class="st">"GK"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb13-47"><a href="#cb13-47" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>player_url, <span class="sc">-</span>player_face_url, <span class="sc">-</span>real_face, <span class="sc">-</span>player_traits, <span class="sc">-</span>player_tags) <span class="sc">|&gt;</span></span>
+<span id="cb13-48"><a href="#cb13-48" aria-hidden="true" tabindex="-1"></a>  <span class="fu">separate</span>(work_rate, <span class="at">into =</span> <span class="fu">c</span>(<span class="st">"work_rate_attacking"</span>, <span class="st">"work_rate_defending"</span>), <span class="at">sep =</span> <span class="st">"/"</span>) </span>
+<span id="cb13-49"><a href="#cb13-49" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb13-50"><a href="#cb13-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-51"><a href="#cb13-51" aria-hidden="true" tabindex="-1"></a>players21 <span class="ot">&lt;-</span> players <span class="sc">|&gt;</span></span>
+<span id="cb13-52"><a href="#cb13-52" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(fifa_version <span class="sc">==</span> <span class="dv">21</span>, player_positions <span class="sc">!=</span> <span class="st">"GK"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb13-53"><a href="#cb13-53" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>player_url, <span class="sc">-</span>player_face_url, <span class="sc">-</span>real_face, <span class="sc">-</span>player_traits, <span class="sc">-</span>player_tags) <span class="sc">|&gt;</span></span>
+<span id="cb13-54"><a href="#cb13-54" aria-hidden="true" tabindex="-1"></a>  <span class="fu">separate</span>(work_rate, <span class="at">into =</span> <span class="fu">c</span>(<span class="st">"work_rate_attacking"</span>, <span class="st">"work_rate_defending"</span>), <span class="at">sep =</span> <span class="st">"/"</span>) </span>
+<span id="cb13-55"><a href="#cb13-55" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb13-56"><a href="#cb13-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-57"><a href="#cb13-57" aria-hidden="true" tabindex="-1"></a>players21_GK <span class="ot">&lt;-</span> players <span class="sc">|&gt;</span></span>
+<span id="cb13-58"><a href="#cb13-58" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(fifa_version <span class="sc">==</span> <span class="dv">21</span>, player_positions <span class="sc">==</span> <span class="st">"GK"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb13-59"><a href="#cb13-59" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>player_url, <span class="sc">-</span>player_face_url, <span class="sc">-</span>real_face, <span class="sc">-</span>player_traits, <span class="sc">-</span>player_tags) <span class="sc">|&gt;</span></span>
+<span id="cb13-60"><a href="#cb13-60" aria-hidden="true" tabindex="-1"></a>  <span class="fu">separate</span>(work_rate, <span class="at">into =</span> <span class="fu">c</span>(<span class="st">"work_rate_attacking"</span>, <span class="st">"work_rate_defending"</span>), <span class="at">sep =</span> <span class="st">"/"</span>) </span>
+<span id="cb13-61"><a href="#cb13-61" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb13-62"><a href="#cb13-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-63"><a href="#cb13-63" aria-hidden="true" tabindex="-1"></a>players22 <span class="ot">&lt;-</span> players <span class="sc">|&gt;</span></span>
+<span id="cb13-64"><a href="#cb13-64" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(fifa_version <span class="sc">==</span> <span class="dv">22</span>, player_positions <span class="sc">!=</span> <span class="st">"GK"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb13-65"><a href="#cb13-65" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>player_url, <span class="sc">-</span>player_face_url, <span class="sc">-</span>real_face, <span class="sc">-</span>player_traits, <span class="sc">-</span>player_tags) <span class="sc">|&gt;</span></span>
+<span id="cb13-66"><a href="#cb13-66" aria-hidden="true" tabindex="-1"></a>  <span class="fu">separate</span>(work_rate, <span class="at">into =</span> <span class="fu">c</span>(<span class="st">"work_rate_attacking"</span>, <span class="st">"work_rate_defending"</span>), <span class="at">sep =</span> <span class="st">"/"</span>) </span>
+<span id="cb13-67"><a href="#cb13-67" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb13-68"><a href="#cb13-68" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-69"><a href="#cb13-69" aria-hidden="true" tabindex="-1"></a>players22_GK <span class="ot">&lt;-</span> players <span class="sc">|&gt;</span></span>
+<span id="cb13-70"><a href="#cb13-70" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(fifa_version <span class="sc">==</span> <span class="dv">22</span>, player_positions <span class="sc">==</span> <span class="st">"GK"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb13-71"><a href="#cb13-71" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>player_url, <span class="sc">-</span>player_face_url, <span class="sc">-</span>real_face, <span class="sc">-</span>player_traits, <span class="sc">-</span>player_tags) <span class="sc">|&gt;</span></span>
+<span id="cb13-72"><a href="#cb13-72" aria-hidden="true" tabindex="-1"></a>  <span class="fu">separate</span>(work_rate, <span class="at">into =</span> <span class="fu">c</span>(<span class="st">"work_rate_attacking"</span>, <span class="st">"work_rate_defending"</span>), <span class="at">sep =</span> <span class="st">"/"</span>) </span>
+<span id="cb13-73"><a href="#cb13-73" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb13-74"><a href="#cb13-74" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-75"><a href="#cb13-75" aria-hidden="true" tabindex="-1"></a>players23 <span class="ot">&lt;-</span> players <span class="sc">|&gt;</span></span>
+<span id="cb13-76"><a href="#cb13-76" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(fifa_version <span class="sc">==</span> <span class="dv">23</span>, player_positions <span class="sc">!=</span> <span class="st">"GK"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb13-77"><a href="#cb13-77" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>player_url, <span class="sc">-</span>player_face_url, <span class="sc">-</span>real_face, <span class="sc">-</span>player_traits, <span class="sc">-</span>player_tags) <span class="sc">|&gt;</span></span>
+<span id="cb13-78"><a href="#cb13-78" aria-hidden="true" tabindex="-1"></a>  <span class="fu">separate</span>(work_rate, <span class="at">into =</span> <span class="fu">c</span>(<span class="st">"work_rate_attacking"</span>, <span class="st">"work_rate_defending"</span>), <span class="at">sep =</span> <span class="st">"/"</span>) </span>
+<span id="cb13-79"><a href="#cb13-79" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb13-80"><a href="#cb13-80" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-81"><a href="#cb13-81" aria-hidden="true" tabindex="-1"></a>players23_GK <span class="ot">&lt;-</span> players <span class="sc">|&gt;</span></span>
+<span id="cb13-82"><a href="#cb13-82" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(fifa_version <span class="sc">==</span> <span class="dv">23</span>, player_positions <span class="sc">==</span> <span class="st">"GK"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb13-83"><a href="#cb13-83" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>player_url, <span class="sc">-</span>player_face_url, <span class="sc">-</span>real_face, <span class="sc">-</span>player_traits, <span class="sc">-</span>player_tags) <span class="sc">|&gt;</span></span>
+<span id="cb13-84"><a href="#cb13-84" aria-hidden="true" tabindex="-1"></a>  <span class="fu">separate</span>(work_rate, <span class="at">into =</span> <span class="fu">c</span>(<span class="st">"work_rate_attacking"</span>, <span class="st">"work_rate_defending"</span>), <span class="at">sep =</span> <span class="st">"/"</span>) </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Um Disclaimer importante para ser feito é q os dados financeiros contidos nesta base de dados não são valores propriamente reais e auditáveis. Em sua essência eles são uma estimativa feita pela própria EA destes valores, e leva em consideração características como o OVR, a idade, a reputação internacional, o potencial, a liga em que o jogador atua etc; também deve ser levado em consideração que estas estimativas, muito provavelmente, devem levar em consideração questões de balanceamento do jogo. Sendo assim, será utilizada a biblioteca “worldfootballR” numa tentativa de atualizar estes dados para enfim representarem valores reais.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(worldfootballR)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>A referida biblioteca integra ferramentas de web-scraping para 3 diferentes sites (FBref, Transfermarkt, Understat), possibilitando que valores reais de salários, market value e release clause sejam obtidos. Idealmente seria possível encontrar os valores correspondentes para todos os jogadores na base de dados, inclusive para aqueles cujas informações estão ausentes, entretanto, como não existe garantia de que isto será possível, no caso destas informações não serem encontradas, serão mantidos os valores estimados pela EA.</p>
+<p>Outra informação útil que esta biblioteca pode prover são as estatísticas de desempenho dos jogadores em cada temporada. A partir disso, seria possível utilizar o desempenho real dos atletas em conjunto com as informações providas/desenvolvidas pela EA para uso em modelos preditivos, ou até mesmo utilizá-las para desenhar correlações entre estas informações e desenvolvimento dos jogadores ao longo do tempo. É importante ressaltar ainda que os ciclos do Fifa ocorrem quase que simultaneamente aos ciclos das temporadas do futebol europeu, assim o fifa 17 cobre a temporada 17/18, o fifa 18 cobre a temporada 18/19 e assim por diante.</p>
+<p>Por fim, para falar mais especificamente sobre as correlações e analises que se pretende desenvolver, existem algumas possibilidades, como por exemplo: analisar a evolução do salário dos jogadores ao longo do tempo, analisar a evolução do OVR dos jogadores ao longo do tempo e como isso se relaciona com o desempenho seu desempenho esportivo, correlacionar o rating das ligas com idade de seus jogadores. Ou até mesmo averiguar correlações que são tomadas como verdade no meio futebolístico, como por exemplo, certas ligas serem mais físicas (como a bundesliga) ou mais técnicas (como a premier league) do que as outras. Uma última análise que se pode tentar desenvolver seria o acompanhamento do desenvolvimento do futebol italiano, em relação a quantidade de jovens jogadores nacionais que atuam na Serie A, oportunidade de jogos para eles e seu desenvolvimento ao longo do tempo (dentro da própria liga), para assim tentar melhor compreender a atual decadência do futebol italiano e sua seleção, tema que vem sendo amplamente discutido após os resultados da ultima repescagem para a copa de 2026.</p>
 </section>
 
 </main>
