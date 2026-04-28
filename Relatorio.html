@@ -109,7 +109,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h3 class="anchored" data-anchor-id="considerações-iniciais">Considerações Iniciais</h3>
 <p>O principal objeto de estudo será o dataset FIFA 23 (disponível em: https://huggingface.co/datasets/jsulz/FIFA23), composto por 6 principais tabelas (as tabelas legacy não serão utilizadas). Sendo estas: female_coaches.csv (5.36kB); female_players.csv(94.2MB); female_teams.csv(2.21MB); male_coaches.csv (113kB); male_players.csv(5.64GB); male_teams.csv(113MB), totalizando aproximadamente 5.9GB de dados.</p>
 <p>Devido o tamanho de um dos arquivos e algumas limitações técnicas (memória RAM de apenas 8GB), a biblioteca tidypolars será utilizada para possibilitar a Lazy Evaluation do arquivo male_players. A referida biblioteca traduz, ‘por baixo dos panos’ a ‘grafia’ tidy para comandos polars, viabilizando, assim, a coexistência de uma linguagem altamente idiomática e um ‘potente motor’ polars, que provê ganhos computacionais a partir de paralelismo, multi-threading etc.</p>
-<p>Segue abaixo todo o carregamento do conjunto de dados e os imports necessários. Importante mencionar também que, apesar das tabelas do conjunto female não serem utilizadas na análise principal, elas ainda serão neste primeiro momento, carregadas. Os motivos para sua utilização e posterior remoção estão explicitados na seção seguinte.</p>
+<p>Segue abaixo todo o carregamento do conjunto de dados e os imports necessários. Importante mencionar também que, apesar das tabelas do conjunto female não serem utilizadas na análise principal, elas ainda serão, neste primeiro momento, carregadas. Os motivos para sua utilização e posterior remoção estão explicitados na seção seguinte.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readr)</span>
@@ -350,6 +350,544 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </table>
 </div>
 </div>
+<p>Estando os dados descritos, cabe agora realizar uma análise breve análise exploratória, para averiguar os dados faltantes (NAs).</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Coluna</th>
+<th style="text-align: right;">NAs</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">club_loaned_from</td>
+<td style="text-align: right;">181361</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">club_joined_date</td>
+<td style="text-align: right;">176657</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">release_clause_eur</td>
+<td style="text-align: right;">176611</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">league_level</td>
+<td style="text-align: right;">176576</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">club_contract_valid_until_year</td>
+<td style="text-align: right;">176576</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">value_eur</td>
+<td style="text-align: right;">176530</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">wage_eur</td>
+<td style="text-align: right;">176530</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">league_id</td>
+<td style="text-align: right;">176485</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">league_name</td>
+<td style="text-align: right;">176485</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">club_team_id</td>
+<td style="text-align: right;">176485</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">club_name</td>
+<td style="text-align: right;">176485</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">club_position</td>
+<td style="text-align: right;">176485</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">club_jersey_number</td>
+<td style="text-align: right;">176485</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">goalkeeping_speed</td>
+<td style="text-align: right;">158627</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">player_tags</td>
+<td style="text-align: right;">151198</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">player_traits</td>
+<td style="text-align: right;">109593</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">pace</td>
+<td style="text-align: right;">22741</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">shooting</td>
+<td style="text-align: right;">22741</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">passing</td>
+<td style="text-align: right;">22741</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">dribbling</td>
+<td style="text-align: right;">22741</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">defending</td>
+<td style="text-align: right;">22741</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">physic</td>
+<td style="text-align: right;">22741</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">mentality_composure</td>
+<td style="text-align: right;">16003</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">nation_team_id</td>
+<td style="text-align: right;">3997</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">nation_position</td>
+<td style="text-align: right;">3997</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">nation_jersey_number</td>
+<td style="text-align: right;">3997</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">player_id</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">player_url</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">fifa_version</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">fifa_update</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">fifa_update_date</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">short_name</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">long_name</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">player_positions</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">overall</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">potential</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">age</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">dob</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">height_cm</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">weight_kg</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">nationality_id</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">nationality_name</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">preferred_foot</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">weak_foot</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">skill_moves</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">international_reputation</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">work_rate</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">body_type</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">real_face</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">attacking_crossing</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">attacking_finishing</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">attacking_heading_accuracy</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">attacking_short_passing</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">attacking_volleys</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">skill_dribbling</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">skill_curve</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">skill_fk_accuracy</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">skill_long_passing</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">skill_ball_control</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">movement_acceleration</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">movement_sprint_speed</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">movement_agility</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">movement_reactions</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">movement_balance</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">power_shot_power</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">power_jumping</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">power_stamina</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">power_strength</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">power_long_shots</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">mentality_aggression</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">mentality_interceptions</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">mentality_positioning</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">mentality_vision</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">mentality_penalties</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">defending_marking_awareness</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">defending_standing_tackle</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">defending_sliding_tackle</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">goalkeeping_diving</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">goalkeeping_handling</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">goalkeeping_kicking</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">goalkeeping_positioning</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">goalkeeping_reflexes</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ls</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">st</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">rs</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">lw</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">lf</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">cf</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">rf</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">rw</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">lam</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">cam</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ram</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">lm</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">lcm</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">cm</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">rcm</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">rm</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">lwb</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ldm</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">cdm</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">rdm</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">rwb</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">lb</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">lcb</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">cb</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">rcb</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">rb</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">gk</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">player_face_url</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Como pode-se observar a maior parte das features estão integras, sem valores ausentes. Ainda que algumas delas possuem uma quantidade considerável de NAs, é possível perceber alguns padrões e características referentes a estes valores ausentes que acabam por atenuar essas inconsistências. A primeira delas é que curiosamente o único IGS com NAs é o mentality_composure, isso ocorre porque esse atributo somente foi adicionado no fifa 17, assim as únicas jogadoras que não terão esse valor preenchido são aquelas de edições anteriores a essa. Exatamente por isto, que somente os dados do referido fifa em diante serão utilizados na análise principal. Isso pode ser facilmente verificável, com a seguinte “query”:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>unknown <span class="ot">&lt;-</span> femalePlayers <span class="sc">|&gt;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">is.na</span>(mentality_composure), fifa_version <span class="sc">!=</span> <span class="st">"16"</span>) <span class="co">#Importante mencionar que foi possível filtrar somente pela ausência do valor 16, porque times femininos só foram adicionados a partir do fifa 16.</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">count</span>(unknown)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 1
+      n
+  &lt;int&gt;
+1     0</code></pre>
+</div>
+</div>
+<p>Outra característica interessante que é facilmente identificável é o “split” de valores ausentes entre as colunas de OVR e goalkeeping speed. Isso ocorre porque goleiros não tem propriamente FaceStats, da mesma maneira que jogadores de linha não possuem goalkeeping_speed. Isso se dá porque, conforme introduzido, os FaceStats dos goleiros são praticamente os seus IGS, dessa forma o que aparece na carta de um goleiro é exatamente o valor contido nos GK-IGS. Isso nos trás a uma importante característica dos IGS, como definido no nome eles são Stats utilizados dentro do jogo, assim é necessário que goleiros tenham IGS de ataque, defesa etc, porque é possível colocá-los para jogar na linha, da mesma maneira que jogadores de linha possuem GK-IGS porque é possível colocá-los para jogar como goleiros. Tanto que não existe nenhum valor de RPP ausente. Mas então porquê existem tantos NAs na coluna goalkeeping_speed? A resposta é simples, quando jogadores de linha são utilizados como goleiros o atributo que é levado em conta para definir sua velocidade é o STAT de Pace, assim não é necessário definir um outro IGS para isso. O split mencionado também pode ser facilmente verificado com a seguinte “query”:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Importante mencionar que apesar de um jogador poder ter mais de uma posição, nunca um goleiro pode ter uma posição de linha, nem um jogador de linha pode ter uma posição de goleiro entre as suas posições secundárias. O que acaba por possibilitar esse tipo de filtro.</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>GKs <span class="ot">&lt;-</span> femalePlayers <span class="sc">|&gt;</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(player_positions <span class="sc">==</span> <span class="st">"GK"</span>) </span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>Linha <span class="ot">&lt;-</span> femalePlayers <span class="sc">|&gt;</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(player_positions <span class="sc">!=</span> <span class="st">"GK"</span>) </span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="fu">count</span>(GKs)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 1
+      n
+  &lt;int&gt;
+1 22735</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">count</span>(Linha)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 1
+       n
+   &lt;int&gt;
+1 158626</code></pre>
+</div>
+</div>
+<p>Como pode-se observar, os splits seguem quase que a risca o número de goleiros e jogadores de linha presentes no dataset. Não obstante cabe mencionar que existem 6 NAs a mais nas colunas de STATS do que goleiras na base analisada. Se torna, assim interessante analisar estes casos um pouco mais a fundo.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>Instances <span class="ot">&lt;-</span> femalePlayers <span class="sc">|&gt;</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">is.na</span>(shooting), player_positions <span class="sc">!=</span> <span class="st">"GK"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(short_name, player_positions, fifa_version, fifa_update, fifa_update_date, nationality_name, <span class="fu">where</span>(<span class="sc">~</span> <span class="fu">any</span>(<span class="fu">is.na</span>(.))))</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(Instances)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 6
+Columns: 28
+$ short_name                     &lt;chr&gt; "J. Roord", "L. Beerensteyn", "R. Janse…
+$ player_positions               &lt;chr&gt; "CAM, CM", "RW", "ST, LW, RW", "RB", "R…
+$ fifa_version                   &lt;dbl&gt; 18, 18, 18, 18, 18, 18
+$ fifa_update                    &lt;dbl&gt; 1, 1, 1, 1, 1, 1
+$ fifa_update_date               &lt;date&gt; 2017-08-28, 2017-08-28, 2017-08-28, 201…
+$ nationality_name               &lt;chr&gt; "Netherlands", "Netherlands", "Netherla…
+$ value_eur                      &lt;dbl&gt; NA, NA, NA, NA, NA, NA
+$ wage_eur                       &lt;dbl&gt; NA, NA, NA, NA, NA, NA
+$ league_id                      &lt;dbl&gt; NA, NA, NA, NA, NA, NA
+$ league_name                    &lt;chr&gt; NA, NA, NA, NA, NA, NA
+$ league_level                   &lt;dbl&gt; NA, NA, NA, NA, NA, NA
+$ club_team_id                   &lt;dbl&gt; NA, NA, NA, NA, NA, NA
+$ club_name                      &lt;chr&gt; NA, NA, NA, NA, NA, NA
+$ club_position                  &lt;chr&gt; NA, NA, NA, NA, NA, NA
+$ club_jersey_number             &lt;dbl&gt; NA, NA, NA, NA, NA, NA
+$ club_loaned_from               &lt;lgl&gt; NA, NA, NA, NA, NA, NA
+$ club_joined_date               &lt;date&gt; NA, NA, NA, NA, NA, NA
+$ club_contract_valid_until_year &lt;dbl&gt; NA, NA, NA, NA, NA, NA
+$ release_clause_eur             &lt;dbl&gt; NA, NA, NA, NA, NA, NA
+$ player_tags                    &lt;chr&gt; NA, NA, NA, NA, NA, NA
+$ player_traits                  &lt;chr&gt; NA, "Avoids Using Weaker Foot, Speed D…
+$ pace                           &lt;dbl&gt; NA, NA, NA, NA, NA, NA
+$ shooting                       &lt;dbl&gt; NA, NA, NA, NA, NA, NA
+$ passing                        &lt;dbl&gt; NA, NA, NA, NA, NA, NA
+$ dribbling                      &lt;dbl&gt; NA, NA, NA, NA, NA, NA
+$ defending                      &lt;dbl&gt; NA, NA, NA, NA, NA, NA
+$ physic                         &lt;dbl&gt; NA, NA, NA, NA, NA, NA
+$ goalkeeping_speed              &lt;dbl&gt; NA, NA, NA, NA, NA, NA</code></pre>
+</div>
+</div>
+<p>A partir disso, pode-se perceber que todas as jogadoras de linha com NAs nos STATS são holandesas, da mesma edição do jogo (fifa 18) do mesmo update (1 - Release), o que sugere que isso, muito provavelmente, decorre de algum problema com o licenciamento delas. No caso da Roord ela tinha acabado de se transferir para o Bayern então é possível que tenha ficado em uma especie de limbo enquanto a questão do licenciamento não era resolvida. Dessa forma, os IGS foram preenchidos, por estar no jogo, mas não os STATS, dado que as jogadoras ainda não eram jogáveis, ainda não havia necessidade de-se gerar FaceStats. Outra informação relevante que se pode tirar desta tabela reduzida é que algumas jogadoras tem player_traits e outras não, o que é natural. Nem todos os jogadores/jogadoras vão ter traits, assim é esperado que NAs apareçam nessas colunas. Por mais que essas colunas tenham sido marcadas para remoção, ainda é importante tentar explicar sua quantidade de valores ausentes. Ademais com base nessas duas últimas, define-se que para a análise principal os goleiros serão passados para uma nova tabela, enquanto os dados dos jogadores de linha serão mantidos na tabela Players, com isso será possível realizar analises com dados mais íntegros.</p>
+<p>Outro curioso padrão que pode ser observado é que a quantidade de NAs nas colunas nation_team_id, nation_position, nation_jersey_number é exatamente a mesma. De modo geral isto pode ocorrer por dois motivos, o primeiro é que jogadores/jogadoras que não foram e nem tiveram passagem por suas seleções tendem a não ter esses dados. Já o segundo é que as seleções podem simplesmente não ter sido licenciadas, como ocorreu com a seleção brasileira nos últimos Fifas (atualmente EAFC). Um fato curioso é a jogadora australiana Sam Kerr tem esses dados ausos, porque mesmo dividindo a capa do jogo com Mbappe, a EA por algum motivo resolveu não licenciar sua seleção. Este padrão muito provavelmente virá a se repetir também no conjunto male.</p>
+<p>Por fim é importante que ressaltar que todas as colunas com NAs que ainda não foram comentadas, estão relacionadas a dados de clubes e ligas, sejam eles descritivos ou financeiros. Isso ocorre porque ligas nacionais femininas somente foram adicionadas a partir do fifa 23, por isso esses dados estão ausentes para mais de 90% da base. Este é inclusive um dos principais motivos para a sua não utilização. Ainda assim, é difícil dizer ao certo o porquê existe essa discrepância entre os números de NAs. De qualquer forma é de se esperar que estes números sejam muito menores ao se tratar da tabela players do conjunto male, por mais que ainda estejam presentes, dado que é possível que valores financeiros não sejam estimados para jogadores de muita baixa expressão, de ligas que não tem licenciamento completo (não sendo então jogaveis no modo carreira), ou que alguns jogadores iniciem ou fiquem sem clube durante uma temporada. Ainda é possível que um jogador se transfira para uma liga ou clube não licenciado. Por fim pode ocorrer de um jogador ser licenciado por sua seleção mas não por seu clube, principalmente em anos de copa do mundo, como foi o caso do Daniel Alves na copa de 22, que era jógavel pela seleção brasileira, mas no momento estava no São Paulo, por tanto não tinha licenciamento de clube.</p>
 </section>
 
 </main>
