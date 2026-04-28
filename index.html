@@ -237,12 +237,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </table>
 </div>
 </div>
-<p>Segue também abaixo uma tabela que melhor define cada uma das features, aquelas não aparecerem nela são auto-explicativas. Entretanto cabe neste momento já descrever algumas delas em maiores detalhes e estabelecer algumas convenções que serão utilizadas ao longo da análise.</p>
+<p>Segue também abaixo uma tabela que melhor define cada uma das features. Entretanto cabe neste momento já descrever algumas delas em maiores detalhes e estabelecer algumas convenções que serão utilizadas ao longo da análise.</p>
 <ul>
 <li><p>A feature overall será referenciada como Over (ou OVR), muito por convenção da própria comunidade, mas também por ser uma forma mais sucinta de se referir a ela e que eu já estou mais acostumado a usar.</p></li>
 <li><p>As features pace, shooting, passing, dribbling, defending e physic representam os 6 principais atributos de um jogador no jogo e estão expostos em sua carta, assim serão referenciados como FaceStats (ou STATS), pelos mesmos motivos acima expostos.</p></li>
 <li><p>As features attacking_crossing, attacking_finishing, attacking_heading_accuracy, attacking_short_passing, attacking_volleys, skill_dribbling, skill_curve, skill_fk_accuracy, skill_long_passing, skill_ball_control, movement_acceleration, movement_sprint_speed, movement_agility, movement_reactions, movement_balance, power_shot_power, power_jumping, power_stamina, power_strength, power_long_shots, mentality_aggression, mentality_interceptions, mentality_positioning, mentality_vision, mentality_penalties, mentality_composure, defending_marking_awareness, defending_standing_tackle, defending_sliding_tackle são os atributos, expostos de maneira mais específica, que compõem os FaceStats mencionados, assim serão referenciados como In-Game-Stats (ou IGS), mais uma vez pelos mesmos motivos já expostos. É importante também ressaltar que as features que se iniciam com goalkeeping_ representam os IGS dos goleiros.</p></li>
-<li><p>Por fim, as features ls, st, rs, cf, lf, rf, lw, rw, lam, cam, ram, lm, cm, rm, ldm, cdm, rdm, lwb, rwb, lb, cb, rb, gk indicam o OVR de um jogador em cada uma das posições no campo, assim serão referenciados como Rating-Per-Position (ou RPP), novamente por convenção da própria comunidade.</p></li>
+<li><p>Por fim, as features ls, st, rs, cf, lf, rf, lw, rw, lam, cam, ram, lm, cm, rm, ldm, cdm, rdm, lwb, rwb, lb, cb, rb, lcm , rcm , lcb , rcb, gk indicam o OVR de um jogador em cada uma das posições no campo, assim serão referenciados como Rating-Per-Position (ou RPP), novamente por convenção da própria comunidade.</p></li>
 </ul>
 <div class="cell">
 <div class="cell-output-display">
@@ -263,7 +263,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">overall</td>
-<td style="text-align: left;">Apesar parecer uma métrica simples, o nome pode ser um pouco contraintuitivo, como será demonstrado adiante, o overall não é simplesmente uma média dos FaceStats dos jogadores, no final das contas ele acaba sendo mais um valor arbitrário (dentro do intervalo de 0 a 99) definido pela EA para avaliar o Jogador dentro de sua posição</td>
+<td style="text-align: left;">Apesar de parecer uma métrica simples, o nome pode ser um pouco contraintuitivo, dado que, como será demonstrado adiante, o overall não é simplesmente uma média dos FaceStats dos jogadores. No final das contas ele acaba sendo mais um valor arbitrário (dentro do intervalo de 0 a 99) definido pela EA para avaliar o Jogador dentro de sua posição</td>
 <td style="text-align: left;">OVR</td>
 </tr>
 <tr class="even">
@@ -312,9 +312,39 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td style="text-align: left;">IGS</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">ls / st / rs / cf / lf / rf / lw / rw / lam / cam / ram / lm / cm / rm / ldm / cdm / rdm / lwb / rwb / lb / cb / rb / gk</td>
+<td style="text-align: left;">goalkeeping_diving / goalkeeping_handling / goalkeeping_kicking / goalkeeping_positioning / goalkeeping_reflexes / goalkeeping_speed</td>
+<td style="text-align: left;">Essencialmente os IGS dos goleiros. Uma observação interessante é que na pratica não existe uma diferença entre os FaceStats e os IGS deste tipo de jogador. Ainda assim, eles serão considerados IGS por uma característica dos dados posteriormente explicada</td>
+<td style="text-align: left;">GK-IGS</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">player_positions</td>
+<td style="text-align: left;">Indica as posições em que o jogador normalmente joga, o primeiro valor é a posição principal enquanto os demais indicam as demais posições em que jogador joga. Também é uma coluna messy, assim penso em manter somente o valor da primeira posição</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ls / st / rs / cf / lf / rf / lw / rw / lam / cam / ram / lm / cm / rm / ldm / cdm / rdm / lwb / rwb / lb / cb / rb / lcm / rcm / lcb / rcb / gk</td>
 <td style="text-align: left;">Conforme já descrito, essas features indicam quanto o jogador performa em cada posição</td>
 <td style="text-align: left;">RPP</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">body_type</td>
+<td style="text-align: left;">Por via de regra eles são definidos pela altura e peso dos jogadores, sendo que os caps que definem cada tipo é balanceado pelo gênero do jogador/jogadora. Importante mencionar que alguns jogadores, como salah, messi etc, possuem um body_type definido como Unique</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">real_face</td>
+<td style="text-align: left;">Coluna categórica que apenas indica se o a renderização do rosto do jogador é modelada a partir do jogador real, ou se é usada uma representação genérica. Pode facilmente ser removida</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">player_url / player_face_url</td>
+<td style="text-align: left;">Indicam respectivamente a URL de onde os dados foram extraídos e a URL da imagem de rosto utilizada no jogo. Ambas podem ser facilmente removidas</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">player_id / fifa_version / fifa_update / fifa_update_date / short_name / long_name / value_eur / wage_eur / age / dob / height_cm / weight_kg / league_id / league_name / club_team_id / club_name / club_position / club_jersey_number / club_loaned_from / club_joined_date / club_contract_valid_until_year / nationality_id / nationality_name / nation_team_id / nation_position / nation_jersey_number / release_clause_eur</td>
+<td style="text-align: left;">Auto-explicativas</td>
+<td style="text-align: left;">NA</td>
 </tr>
 </tbody>
 </table>
